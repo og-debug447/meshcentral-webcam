@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+
+- Include the native module exception text in authenticated webcam diagnostics.
+
 ## 0.1.4
 
 - Make the webcam dialog use the same modal fallback as MeshCentral Audio and report missing browser helpers.

@@ -54,7 +54,7 @@ edit(path.join('agents', 'meshcore.js'), function (source) {
                 '            if ((webcamRights != MESHRIGHT_ADMIN) && (((webcamRights & (MESHRIGHT_REMOTECONTROL | MESHRIGHT_REMOTEVIEW)) == 0) || ((webcamRights & MESHRIGHT_NODESKTOP) != 0))) { this.httprequest.s.end(); return; }' + newline +
                 '            this.descriptorMetadata = "Remote Webcam";' + newline +
                 '            try { require("win-webcam").handleTunnelData(this, data); } catch (ex) {' + newline +
-                '                try { this.write(JSON.stringify({ type: "error", message: "Webcam capture is unavailable." })); } catch (e) { }' + newline +
+                '                try { this.write(JSON.stringify({ type: "error", message: "Webcam capture is unavailable: " + String(ex).substring(0, 256) })); } catch (e) { }' + newline +
                 '            }' + newline +
                 '        }' + newline;
             source = source.slice(0, close) + webcamBranch + source.slice(close + closeMatch[0].length);
@@ -70,7 +70,7 @@ edit(path.join('agents', 'meshcore.js'), function (source) {
                 '            if ((webcamRights != MESHRIGHT_ADMIN) && (((webcamRights & (MESHRIGHT_REMOTECONTROL | MESHRIGHT_REMOTEVIEW)) == 0) || ((webcamRights & MESHRIGHT_NODESKTOP) != 0))) { this.httprequest.s.end(); return; }' + newline +
                 '            this.descriptorMetadata = "Remote Webcam";' + newline +
                 '            try { require("win-webcam").handleTunnelData(this, data); } catch (ex) {' + newline +
-                '                try { this.write(JSON.stringify({ type: "error", message: "Webcam capture is unavailable." })); } catch (e) { }' + newline +
+                '                try { this.write(JSON.stringify({ type: "error", message: "Webcam capture is unavailable: " + String(ex).substring(0, 256) })); } catch (e) { }' + newline +
                 '            }' + newline + '        }' + newline;
             source = source.slice(0, close) + branch + source.slice(lineEnd + 1);
         }
