@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+
+- Make the webcam dialog use the same modal fallback as MeshCentral Audio and report missing browser helpers.
+
 ## 0.1.3
 
 - Make the server installer recover from restrictive plugin-file permissions and restart MeshCentral after a failed update.

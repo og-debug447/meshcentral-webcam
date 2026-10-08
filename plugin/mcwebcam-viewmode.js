@@ -163,8 +163,24 @@
         if (!send({ cmd: 'start', deviceId: source.selectedDeviceId, width: source.width, height: source.height, fps: source.fps })) { source.starting = false; source.wantVideo = false; setStatus('The authenticated webcam tunnel is not connected.'); renderDevices(); return; }
         source.starting = false; setStatus('Starting webcam…'); renderDevices();
     }
+    function showWebcamDialog(body) {
+        if (typeof root.setModalContent === 'function' && typeof root.showModal === 'function') {
+            root.setModalContent('xxAddAgent', 'Remote webcam', body, 'small');
+            root.showModal('xxAddAgentModal', 'idx_dlgOkButton');
+            return true;
+        }
+        if (typeof root.setDialogMode === 'function') {
+            root.setDialogMode(2, 'Remote webcam', 2, null, body);
+            return true;
+        }
+        if (root.console && typeof root.console.error === 'function') root.console.error('MeshCentral webcam: no dialog helper is available.');
+        return false;
+    }
     function open() {
-        if (!root.currentNode || !root.currentNode._id || !root.currentNode.agent || (typeof root.isWindowsNode === 'function' && !root.isWindowsNode(root.currentNode))) return false;
+        if (!root.currentNode || !root.currentNode._id || !root.currentNode.agent) {
+            if (root.console && typeof root.console.warn === 'function') root.console.warn('MeshCentral webcam: no connected Windows node is selected.');
+            return false;
+        }
         source.closing = false;
         var body = '<div class="mb-2"><label for="mcwebcamDevices" class="form-label">Webcam</label><select id="mcwebcamDevices" class="form-select" disabled></select></div>' +
             '<div class="row mb-2"><div class="col"><label for="mcwebcamWidth" class="form-label">Width</label><select id="mcwebcamWidth" class="form-select"><option value="320">320</option><option value="640" selected>640</option><option value="1280">1280</option></select></div>' +
@@ -173,8 +189,7 @@
             '<div class="d-flex gap-2 mb-2"><button id="mcwebcamStart" type="button" class="btn btn-primary" disabled>Start viewing</button><button id="mcwebcamStop" type="button" class="btn btn-secondary" disabled>Stop</button></div>' +
             '<div class="text-center bg-dark mb-2"><img id="mcwebcamImage" alt="Remote webcam" style="max-width:100%;max-height:55vh;display:block;margin:auto"></div>' +
             '<details class="small mb-2"><summary>Webcam diagnostics</summary><p id="mcwebcamDiagnostics" class="text-secondary mt-1 mb-0"></p></details><p id="mcwebcamStatus" class="mb-0" role="status"></p>';
-        if (typeof root.setModalContent !== 'function' || typeof root.showModal !== 'function') return false;
-        root.setModalContent('xxAddAgent', 'Remote webcam', body, 'small'); root.showModal('xxAddAgentModal', 'idx_dlgOkButton');
+        if (!showWebcamDialog(body)) return false;
         var closeButton = element('idx_dlgOkButton'); if (closeButton) closeButton.textContent = 'Close';
         if (typeof root.QV === 'function') root.QV('idx_dlgCancelButton', false);
         element('mcwebcamStart').addEventListener('click', startVideo);
