@@ -26,6 +26,7 @@ $work = Join-Path ([IO.Path]::GetTempPath()) ('mcwebcam-' + $stamp)
 $archive = Join-Path $work 'meshcentral-webcam.zip'
 $sourceRoot = Join-Path $work 'meshcentral-webcam-main'
 $backup = Join-Path (Join-Path $data 'mcwebcam-backups') $stamp
+$serviceWasRunning = $false
 New-Item -ItemType Directory -Force -Path $work, $backup | Out-Null
 
 try {
@@ -53,9 +54,15 @@ try {
         Write-Output "Stopping $ServiceName while MeshCentral files are updated..."
         Stop-Service -Name $ServiceName -Force
         (Get-Service -Name $ServiceName).WaitForStatus('Stopped', [TimeSpan]::FromSeconds(45))
+        $serviceWasRunning = $true
     }
 
     New-Item -ItemType Directory -Force -Path $plugin | Out-Null
+    # A previous installer can leave plugin files with a SYSTEM-only ACL.
+    # This installer is already running elevated, so grant the current
+    # administrator access before replacing the old plugin tree.
+    & icacls.exe $plugin /grant "$($identity.Name):(OI)(CI)(F)" /T /C | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Could not update plugin permissions: $plugin" }
     Copy-Item -Path (Join-Path $sourceRoot '*') -Destination $plugin -Recurse -Force
     & $node (Join-Path $sourceRoot 'scripts\patch_meshcentral.js') $package
     if ($LASTEXITCODE -ne 0) { throw "MeshCentral patch exited with code $LASTEXITCODE" }
@@ -70,5 +77,14 @@ try {
     Write-Output "Backup: $backup"
 } catch {
     Write-Output "Installation failed. The original MeshCentral files are backed up at $backup"
+    if ($serviceWasRunning) {
+        try {
+            $currentService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
+            if ($null -ne $currentService -and $currentService.Status -eq 'Stopped') {
+                Start-Service -Name $ServiceName
+                (Get-Service -Name $ServiceName).WaitForStatus('Running', [TimeSpan]::FromSeconds(45))
+            }
+        } catch { Write-Output "MeshCentral service recovery failed: $($_.Exception.Message)" }
+    }
     throw
 }

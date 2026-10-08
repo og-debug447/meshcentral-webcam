@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- Make the server installer recover from restrictive plugin-file permissions and restart MeshCentral after a failed update.
+
 ## 0.1.2
 
 - Add a GitHub-hosted x86/x64 MeshService package and one-command signed-agent updater.
