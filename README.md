@@ -20,6 +20,17 @@ The browser receives a small binary frame header followed by one complete JPEG f
 
 See [docs/architecture.md](docs/architecture.md) for the researched integration points and verification boundary.
 
+## Quick install from GitHub
+
+Open PowerShell as Administrator and run:
+
+```powershell
+irm https://raw.githubusercontent.com/og-debug447/meshcentral-webcam/main/install-webcam.ps1 -OutFile "$env:TEMP\install-webcam.ps1"
+powershell.exe -ExecutionPolicy Bypass -File "$env:TEMP\install-webcam.ps1"
+```
+
+The installer downloads the project, copies it into `meshcentral-data\plugins\mcwebcam`, applies the idempotent MeshCentral patch, restarts the MeshCentral service, and keeps a backup of the patched server files. The endpoint still needs a MeshAgent built with `scripts\patch_meshagent.js` before the camera can stream.
+
 ## Build and patch
 
 From a Windows checkout of MeshAgent, run `node scripts/patch_meshagent.js C:\path\to\MeshAgent` and build the x86 and x64 `MeshService-2022` Release projects with Visual Studio. The patcher adds the native source/header and the required Windows Media Foundation/WIC import libraries; it does not change the upstream checkout's remote or publish binaries.
