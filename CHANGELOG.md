@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2
+
+- Add a GitHub-hosted x86/x64 MeshService package and one-command signed-agent updater.
+
 ## 0.1.1
 
 - Add a one-command GitHub installer for the plugin and MeshCentral UI/relay patch.

@@ -1,6 +1,7 @@
 param(
     [string]$MeshCentralRoot = 'C:\Program Files\Open Source\MeshCentral',
-    [string]$BinaryDirectory = 'C:\Users\Laptop\Downloads\MeshAgent-webcam-build\meshservice\Release',
+    [string]$BinaryDirectory = '',
+    [string]$BinaryArchiveUrl = 'https://raw.githubusercontent.com/og-debug447/meshcentral-webcam/main/dist/meshagent-webcam-win-0.1.2.zip',
     [string]$ServiceName = 'meshcentral.exe'
 )
 
@@ -9,8 +10,9 @@ $package = Join-Path $MeshCentralRoot 'node_modules\meshcentral'
 $data = Join-Path $MeshCentralRoot 'meshcentral-data'
 $packageAgents = Join-Path $package 'agents'
 $signedAgents = Join-Path $data 'signedagents'
-$sourceX86 = Join-Path $BinaryDirectory 'MeshService.exe'
-$sourceX64 = Join-Path $BinaryDirectory 'MeshService64.exe'
+$staging = $null
+$sourceX86 = $null
+$sourceX64 = $null
 $targetX86 = Join-Path $packageAgents 'MeshService.exe'
 $targetX64 = Join-Path $packageAgents 'MeshService64.exe'
 $signedX86 = Join-Path $signedAgents 'MeshService.exe'
@@ -22,7 +24,26 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
     throw 'Open PowerShell with Run as administrator, then run this updater again.'
 }
 foreach ($path in @($package, $packageAgents, $signedAgents, $sourceX86, $sourceX64)) {
-    if (-not (Test-Path -LiteralPath $path)) { throw "Required path not found: $path" }
+    if ($null -ne $path -and -not (Test-Path -LiteralPath $path)) { throw "Required path not found: $path" }
+}
+
+if ([string]::IsNullOrWhiteSpace($BinaryDirectory)) {
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $staging = Join-Path ([IO.Path]::GetTempPath()) ('mcwebcam-agent-' + [Guid]::NewGuid().ToString('N'))
+    $archive = Join-Path $staging 'meshagent-webcam.zip'
+    $extracted = Join-Path $staging 'files'
+    New-Item -ItemType Directory -Force -Path $staging, $extracted | Out-Null
+    Write-Output "Downloading webcam-capable x86/x64 agents from GitHub..."
+    Invoke-WebRequest -UseBasicParsing -Uri $BinaryArchiveUrl -OutFile $archive
+    Expand-Archive -LiteralPath $archive -DestinationPath $extracted -Force
+    $sourceX86 = Join-Path $extracted 'MeshService.exe'
+    $sourceX64 = Join-Path $extracted 'MeshService64.exe'
+} else {
+    $sourceX86 = Join-Path $BinaryDirectory 'MeshService.exe'
+    $sourceX64 = Join-Path $BinaryDirectory 'MeshService64.exe'
+}
+foreach ($path in @($sourceX86, $sourceX64)) {
+    if (-not (Test-Path -LiteralPath $path)) { throw "Required agent binary not found: $path" }
 }
 
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'

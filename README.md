@@ -31,14 +31,22 @@ powershell.exe -ExecutionPolicy Bypass -File "$env:TEMP\install-webcam.ps1"
 
 The installer downloads the project, copies it into `meshcentral-data\plugins\mcwebcam`, applies the idempotent MeshCentral patch, restarts the MeshCentral service, and keeps a backup of the patched server files. The endpoint still needs a MeshAgent built with `scripts\patch_meshagent.js` before the camera can stream.
 
-After building `MeshService.exe` and `MeshService64.exe`, update MeshCentral's signed agent cache with:
+The signed-agent updater downloads the checked build from this repository, updates both x86 and x64 signed-agent cache entries, and keeps a rollback backup. Run it as Administrator:
 
 ```powershell
 irm https://raw.githubusercontent.com/og-debug447/meshcentral-webcam/main/install-webcam-agent.ps1 -OutFile "$env:TEMP\install-webcam-agent.ps1"
 powershell.exe -ExecutionPolicy Bypass -File "$env:TEMP\install-webcam-agent.ps1"
 ```
 
-The default binary directory is `C:\Users\Laptop\Downloads\MeshAgent-webcam-build\meshservice\Release`. Pass `-BinaryDirectory` if your build is elsewhere. After the script succeeds, use MeshCentral's Agent Update/Reinstall action on the Windows endpoint.
+The updater uses the GitHub package by default. Pass `-BinaryDirectory` to use locally built `MeshService.exe` and `MeshService64.exe` instead. After the script succeeds, use MeshCentral's Agent Update/Reinstall action on the Windows endpoint.
+
+To install or refresh the server-side plugin from MeshCentral, open the server **Plugins** settings and add this configuration URL:
+
+```text
+https://raw.githubusercontent.com/og-debug447/meshcentral-webcam/main/config.json
+```
+
+The server patch must be applied once with `install-webcam.ps1`; subsequent plugin refreshes can use the GitHub configuration URL. The agent updater and the plugin refresh are separate: the former replaces the native Windows service binaries, while the latter refreshes the authenticated PC Control integration.
 
 ## Build and patch
 
