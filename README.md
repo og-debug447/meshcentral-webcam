@@ -29,7 +29,7 @@ irm https://raw.githubusercontent.com/og-debug447/meshcentral-webcam/main/instal
 powershell.exe -ExecutionPolicy Bypass -File "$env:TEMP\install-webcam.ps1"
 ```
 
-The installer downloads the project, copies it into `meshcentral-data\plugins\mcwebcam`, applies the idempotent MeshCentral patch, restarts the MeshCentral service, and keeps a backup of the patched server files. The endpoint still needs a MeshAgent built with `scripts\patch_meshagent.js` before the camera can stream.
+The installer downloads the project, copies it into `meshcentral-data\plugins\mcwebcam`, applies the idempotent MeshCentral patch, restarts the MeshCentral service, and keeps a backup of the patched server files.
 
 The signed-agent updater downloads the checked build from this repository, updates both x86 and x64 signed-agent cache entries, and keeps a rollback backup. Run it as Administrator:
 
