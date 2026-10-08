@@ -1,0 +1,21 @@
+# Local disposable fixtures and build outputs.
+build/
+
+# Visual Studio and Windows build products.
+*.exe
+*.dll
+*.pdb
+*.obj
+*.lib
+*.exp
+*.ilk
+*.iobj
+*.ipdb
+*.tlog/
+
+# Editor/OS noise.
+.vs/
+*.user
+*.suo
+Thumbs.db
+Desktop.ini

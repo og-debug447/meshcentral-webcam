@@ -1,0 +1,18 @@
+{
+  "name": "MeshCentral Webcam",
+  "shortName": "mcwebcam",
+  "version": "0.1.0",
+  "author": "MeshCentral Webcam contributors",
+  "description": "View an authenticated Windows webcam beside MeshCentral PC Control.",
+  "hasAdminPanel": false,
+  "homepage": "https://github.com/og-debug447/meshcentral-webcam",
+  "changelogUrl": "https://raw.githubusercontent.com/og-debug447/meshcentral-webcam/main/CHANGELOG.md",
+  "configUrl": "https://raw.githubusercontent.com/og-debug447/meshcentral-webcam/main/config.json",
+  "downloadUrl": "https://github.com/og-debug447/meshcentral-webcam/archive/refs/heads/main.zip",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/og-debug447/meshcentral-webcam.git"
+  },
+  "versionHistoryUrl": "https://api.github.com/repos/og-debug447/meshcentral-webcam/tags",
+  "meshCentralCompat": ">=1.1.0"
+}
