@@ -83,6 +83,7 @@ edit(path.join('agents', 'meshcore.js'), function (source) {
         const newline = source[brace] === '\r' ? '\r\n' : '\n';
         source = source.slice(0, brace) + newline + cleanup + source.slice(brace);
     }
+    source = source.replaceAll('message: "Webcam capture is unavailable."', 'message: "Webcam capture is unavailable: " + String(ex).substring(0, 256)');
     return source;
 });
 
