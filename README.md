@@ -31,6 +31,15 @@ powershell.exe -ExecutionPolicy Bypass -File "$env:TEMP\install-webcam.ps1"
 
 The installer downloads the project, copies it into `meshcentral-data\plugins\mcwebcam`, applies the idempotent MeshCentral patch, restarts the MeshCentral service, and keeps a backup of the patched server files. The endpoint still needs a MeshAgent built with `scripts\patch_meshagent.js` before the camera can stream.
 
+After building `MeshService.exe` and `MeshService64.exe`, update MeshCentral's signed agent cache with:
+
+```powershell
+irm https://raw.githubusercontent.com/og-debug447/meshcentral-webcam/main/install-webcam-agent.ps1 -OutFile "$env:TEMP\install-webcam-agent.ps1"
+powershell.exe -ExecutionPolicy Bypass -File "$env:TEMP\install-webcam-agent.ps1"
+```
+
+The default binary directory is `C:\Users\Laptop\Downloads\MeshAgent-webcam-build\meshservice\Release`. Pass `-BinaryDirectory` if your build is elsewhere. After the script succeeds, use MeshCentral's Agent Update/Reinstall action on the Windows endpoint.
+
 ## Build and patch
 
 From a Windows checkout of MeshAgent, run `node scripts/patch_meshagent.js C:\path\to\MeshAgent` and build the x86 and x64 `MeshService-2022` Release projects with Visual Studio. The patcher adds the native source/header and the required Windows Media Foundation/WIC import libraries; it does not change the upstream checkout's remote or publish binaries.
